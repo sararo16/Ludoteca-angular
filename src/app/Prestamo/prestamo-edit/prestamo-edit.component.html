@@ -1,0 +1,63 @@
+<div class="container">
+
+    <!-- Título dinámico -->
+    <h1 *ngIf="prestamo.id == null">Crear préstamo</h1>
+    <h1 *ngIf="prestamo.id != null">Editar préstamo</h1>
+
+    <!-- Mensaje de error del backend o validaciones de front -->
+    <div *ngIf="backendError" class="error-box">
+        {{ backendError }}
+    </div>
+
+    <form>
+
+        <!-- ID (solo lectura) -->
+        <mat-form-field>
+            <mat-label>Identificador</mat-label>
+            <input type="text" matInput placeholder="Identificador" [(ngModel)]="prestamo.id" name="id" disabled>
+        </mat-form-field>
+
+        <!-- CLIENTE: bind a clientId (number) -->
+        <mat-form-field>
+            <mat-label>Cliente</mat-label>
+            <mat-select disableRipple [(ngModel)]="prestamo.clientId" name="clientId" required>
+                <mat-option *ngFor="let c of clients" [value]="c.id">{{ c.name }}</mat-option>
+            </mat-select>
+            <mat-error>El cliente no puede estar vacío</mat-error>
+        </mat-form-field>
+
+        <!-- JUEGO: bind a gameId (number) -->
+        <mat-form-field>
+            <mat-label>Juego</mat-label>
+            <mat-select disableRipple [(ngModel)]="prestamo.gameId" name="gameId" required>
+                <mat-option *ngFor="let g of games" [value]="g.id">{{ g.title }}</mat-option>
+            </mat-select>
+            <mat-error>El juego no puede estar vacío</mat-error>
+        </mat-form-field>
+
+        <!-- FECHA INICIO -->
+        <mat-form-field>
+            <mat-label>Fecha inicio</mat-label>
+            <!-- mat-datepicker admite tanto Date como string yyyy-MM-dd -->
+            <input matInput [matDatepicker]="dp1" [(ngModel)]="prestamo.startDate" name="startDate">
+            <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+            <mat-datepicker #dp1></mat-datepicker>
+        </mat-form-field>
+
+        <!-- FECHA FIN -->
+        <mat-form-field>
+            <mat-label>Fecha fin</mat-label>
+            <input matInput [matDatepicker]="dp2" [(ngModel)]="prestamo.endDate" name="endDate">
+            <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+            <mat-datepicker #dp2></mat-datepicker>
+        </mat-form-field>
+
+    </form>
+
+    <!-- Botones -->
+    <div class="buttons">
+        <button mat-stroked-button (click)="onClose()">Cerrar</button>
+        <button mat-flat-button color="primary" (click)="onSave()">Guardar</button>
+    </div>
+
+</div>

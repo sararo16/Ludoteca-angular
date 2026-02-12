@@ -1,0 +1,20 @@
+.container {
+    min-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.error-box {
+    background: #ffebee;
+    border: 1px solid #c62828;
+    padding: 10px;
+    border-radius: 4px;
+    color: #c62828;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}

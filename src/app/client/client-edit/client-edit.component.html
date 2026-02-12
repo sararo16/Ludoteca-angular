@@ -1,0 +1,33 @@
+<div class="container">
+    <!-- Titulo dinamico segun si es creacion o edicion -->
+    <h1 *ngIf="client.id == null">Crear cliente</h1>
+    <h1 *ngIf="client.id != null">Modificar cliente</h1>
+
+    <!-- Formulario de cliente -->
+    <form #form="ngForm">
+
+        <!-- Campo id (solo lectura en edicion , oculto en creacion )-->
+        <mat-form-field>
+            <mat-label>Identificador</mat-label>
+            <input type="text" matInput placeholder="Identificador" [(ngModel)]="client.id" name="id" disabled>
+        </mat-form-field>
+
+        <!-- Campo nombre (obligatorio) -->
+        <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <!-- ngModel vincula el campo al modelo client.name-->
+            <!-- Required activa validacion simple del formulario -->
+            <input type="text" matInput placeholder="Nombre de cliente" [(ngModel)]="client.name" name="name" required>
+
+            <!-- Mensaje de error del mat-error -->
+            <mat-error>El nombre no puede estar vacío</mat-error>
+        </mat-form-field>
+    </form>
+
+    <!-- Botones de accion -->
+    <div class="buttons">
+        <button mat-stroked-button (click)="onClose()">Cerrar</button>
+        <!-- Boton de guardar -->
+        <button mat-flat-button color="primary" (click)="onSave()">Guardar</button>
+    </div>
+</div>

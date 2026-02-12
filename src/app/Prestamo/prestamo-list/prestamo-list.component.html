@@ -1,0 +1,125 @@
+<!--
+  Vista principal de la gestión de préstamos.
+  Incluye:
+   - Filtros por juego, cliente y fecha
+   - Tabla con paginación
+   - Botón para crear un nuevo préstamo
+-->
+
+<div class="container">
+
+    <h1>Gestión de préstamos</h1>
+
+    <!-- Filtros superiores -->
+    <div class="filters">
+
+        <!-- Filtro: Juego -->
+        <mat-form-field appearance="outline">
+            <mat-label>Juego</mat-label>
+            <mat-select [(ngModel)]="filterGameId">
+                <mat-option [value]="undefined">Todos</mat-option>
+                <mat-option *ngFor="let g of games" [value]="g.id">
+                    {{ g.title }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Filtro: Cliente -->
+        <mat-form-field appearance="outline">
+            <mat-label>Cliente</mat-label>
+            <mat-select [(ngModel)]="filterClientId">
+                <mat-option [value]="undefined">Todos</mat-option>
+                <mat-option *ngFor="let c of clients" [value]="c.id">
+                    {{ c.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Filtro: Fecha -->
+        <mat-form-field appearance="outline">
+            <mat-label>Fecha</mat-label>
+            <input matInput [matDatepicker]="dp" [(ngModel)]="filterDate">
+            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+            <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Botones de acción -->
+        <div class="button-group">
+            <button mat-stroked-button color="primary" (click)="cleanFilters()">Limpiar</button>
+            <button mat-flat-button color="primary" (click)="search()">Filtrar</button>
+        </div>
+
+    </div>
+
+    <!--  Tabla de préstamos-->
+
+    <table mat-table [dataSource]="prestamos" class="mat-elevation-z2">
+
+        <!-- ID -->
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let p">{{ p.id }}</td>
+        </ng-container>
+
+        <!-- Juego -->
+        <ng-container matColumnDef="gameName">
+            <th mat-header-cell *matHeaderCellDef>Juego</th>
+            <td mat-cell *matCellDef="let p">{{ p.gameName }}</td>
+        </ng-container>
+
+        <!-- Cliente -->
+        <ng-container matColumnDef="clientName">
+            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <td mat-cell *matCellDef="let p">{{ p.clientName }}</td>
+        </ng-container>
+
+        <!-- Fecha inicio -->
+        <ng-container matColumnDef="startDate">
+            <th mat-header-cell *matHeaderCellDef>Inicio</th>
+            <td mat-cell *matCellDef="let p">{{ p.startDate }}</td>
+        </ng-container>
+
+        <!-- Fecha fin -->
+        <ng-container matColumnDef="endDate">
+            <th mat-header-cell *matHeaderCellDef>Fin</th>
+            <td mat-cell *matCellDef="let p">{{ p.endDate }}</td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let p">
+
+                <!-- Botón editar -->
+                <button mat-icon-button color="primary" (click)="openEdit(p)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+
+                <!-- Botón eliminar -->
+                <button mat-icon-button color="warn" (click)="deletePrestamo(p.id!)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+
+            </td>
+        </ng-container>
+
+        <!-- Renderizado de cabecera y filas -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+
+    <!--Paginación -->
+
+    <mat-paginator [length]="totalItems" [pageSize]="5" [pageSizeOptions]="[5,10,20]" (page)="onPageChange()">
+    </mat-paginator>
+
+    <!-- Botón crear préstamo-->
+
+    <div class="create-button">
+        <button mat-flat-button color="primary" (click)="openEdit()">
+            Nuevo préstamo
+        </button>
+    </div>
+
+</div>

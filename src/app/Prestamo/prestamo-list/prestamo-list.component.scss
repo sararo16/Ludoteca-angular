@@ -1,0 +1,38 @@
+/*
+ * Estilos del listado de préstamos.
+ * Mantengo el estilo general del módulo Game para que toda la app sea coherente.
+ */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 10px 20px;
+}
+
+/* Filtros*/
+.filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+/*Tabla*/
+
+table {
+    width: 100%;
+}
+
+/* Botón crear*/
+
+.create-button {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
