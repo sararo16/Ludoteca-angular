@@ -6,7 +6,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { PrestamoService } from '../prestamo.service';
 import { Prestamo } from '../model/Prestamo';
 
-// Servicios para cargar combos
+// Servicios para cargar datos e1n combos
 import { GameService } from 'src/app/game/game.service';
 import { ClientService } from 'src/app/client/client.service';
 
@@ -21,10 +21,10 @@ import { Client } from 'src/app/client/model/client';
 })
 export class PrestamoEditComponent implements OnInit {
 
-  //el objeto el cual editaremos o crearemos
+  //el objeto el cual editaremos o crearemos (se inyecta o se inicializa en blanco)
   prestamo!: Prestamo;
 
-  //listas para cargar combos
+  //listas cargadas desde el back para los combos del formulario
   games: Game[] = [];
   clients: Client[] = [];
 
@@ -32,8 +32,13 @@ export class PrestamoEditComponent implements OnInit {
   backendError?: string;
 
   constructor(
+    //referencia al dialogo para poder cerrarlo (ok/cancel)
     public dialogRef: MatDialogRef<PrestamoEditComponent>,
+
+    //datos que llegan al dialog: si viene un prestamo, es edicion si no es alta
     @Inject(MAT_DIALOG_DATA) public data: { prestamo: Prestamo | null },
+
+    //servicios para gestionar prestamos y cargar datos del formulario
     private prestamoService: PrestamoService,
     private gameService: GameService,
     private clientService: ClientService
@@ -43,7 +48,7 @@ export class PrestamoEditComponent implements OnInit {
 
     /*
      * 1. iniciamos el objeto prestamo 
-    * Si viene data, clonamos para no mutar el original hasta guardar
+    * Si viene en data, clonamos para no modificar el original antes de guardar
     * Si no viene, nuevo prestamo
     */
 
@@ -56,21 +61,23 @@ export class PrestamoEditComponent implements OnInit {
 
     /*
     * 2. Cargamos combos de clientes y juegos
+    * Se obtienen desde el back y se asignan los arrays del formulario
     */
     this.clientService.getClients().subscribe((clients) => {
       this.clients = clients;
-      //si vwenimos en modo edicion, aseguraamos que clientId tenga un valor valido para el combo
+      //si venimos en modo edicion, aseguraamos que clientId tenga un valor valido para el combo
     });
     this.gameService.getGames().subscribe((games) => {
       this.games = games;
     });
   }
 
-  //validaciones del front
+  //validaciones  de fechas del front
 
   /*
   *Comprueba que endDate>=StartDate
-  *Acepta string o date. devuelve true si ok, false si es invalido
+  *Acepta string o date. 
+  * devuelve true si ok, false si es invalido
   */
   private validateEndAfterStart(): boolean {
     if (!this.prestamo.startDate || !this.prestamo.endDate) return true; //se validara required en back
@@ -78,10 +85,10 @@ export class PrestamoEditComponent implements OnInit {
     const s = this.asDate(this.prestamo.startDate);
     const e = this.asDate(this.prestamo.endDate);
 
-    //si no se pudieron convertir, dejamos que el back valida 
+    //si no se pudieron convertir, dejamos que el back valide 
     if (!s || !e) return true;
 
-    //normalizamos a medianoche para evitar desfases por TZ
+    //normalizamos a medianoche para evitar desfases por zona horaria
     const s0 = new Date(s.getFullYear(), s.getMonth(), s.getDate());
     const e0 = new Date(e.getFullYear(), e.getMonth(), e.getDate());
 
@@ -95,14 +102,16 @@ export class PrestamoEditComponent implements OnInit {
   private validateMax14Days(): boolean {
     if (!this.prestamo.startDate || !this.prestamo.endDate) return true;
 
+    //converitr fechas a objetos date
     const s = this.asDate(this.prestamo.startDate);
     const e = this.asDate(this.prestamo.endDate);
     if (!s || !e) return true;
 
+    //creamos las fechas normalizadas 
     const ms = new Date(e.getFullYear(), e.getMonth(), e.getDate()).getTime()
       - new Date(s.getFullYear(), s.getMonth(), s.getDate()).getTime();
-
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24)) + 1; //+1 para incluir ambos dias
+    //convertimos milisegundos a dias, sumamos 1 para incluir ambos extremos
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24)) + 1;
     return days <= 14;
   }
 
@@ -151,7 +160,7 @@ export class PrestamoEditComponent implements OnInit {
   // guardar (crear/editar)
 
   onSave() {
-    this.backendError = undefined;
+    this.backendError = undefined; //limpiamos error previo
 
     // Validaciones front
     if (!this.validateEndAfterStart()) {
@@ -163,7 +172,7 @@ export class PrestamoEditComponent implements OnInit {
       this.backendError = 'El préstamo no puede superar los 14 días';
       return;
     }
-
+    //normalizacion del payload antes de enviar el back
     const start = this.toIso(this.prestamo.startDate);
     const end = this.toIso(this.prestamo.endDate);
 
@@ -175,7 +184,7 @@ export class PrestamoEditComponent implements OnInit {
       endDate: end!
     };
 
-    // Crear
+    // si no tiene id, crear
     if (payload.id == null) {
       this.prestamoService.createPrestamo(payload).subscribe({
         next: () => this.dialogRef.close(true),
@@ -186,7 +195,7 @@ export class PrestamoEditComponent implements OnInit {
       });
     }
 
-    // Editar
+    // si tiene id, actualizar
     else {
       this.prestamoService.updatePrestamo(payload.id, payload).subscribe({
         next: () => this.dialogRef.close(true),
@@ -196,6 +205,7 @@ export class PrestamoEditComponent implements OnInit {
       });
     }
   }
+  //cierra dialogo sin guardar
   onClose() {
     this.dialogRef.close();
   }

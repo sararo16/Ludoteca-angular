@@ -1,13 +1,15 @@
 
 /*
 * Modelo que representa un prestamo en el front
-coincide con el PrestamoDto del back
+* coincide con el PrestamoDto del back
 */
 
 export class Prestamo {
-    id?: number | null; //null si es nuevo
 
-    //id y name del juego asociado 
+    //identificador del prestamo, es opcional y puede venir a null cuando es alta
+    id?: number | null;
+
+    //Identificador del juego asociado:- gameid: necesario para operar y name para mostrar en la tabla
     gameId!: number;
     gameName?: string;
 
@@ -15,8 +17,8 @@ export class Prestamo {
     clientId!: number;
     clientName?: string;
 
-
-    //ambas son string para evitar problemas con el Date y zonas horarias
+    //fechas representadas como string para evitar problemas con date/zonas horarias en el front
+    //se espera formato consistente en el back
     startDate!: string;
     endDate!: string;
 }

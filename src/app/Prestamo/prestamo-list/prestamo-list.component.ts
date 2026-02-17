@@ -53,14 +53,14 @@ export class PrestamoListComponent implements OnInit {
     'actions'
   ];
 
-  //lista de prestamos obtenidos del back
+  //lista de prestamos obtenidos del back para mostrar en la tabla
   prestamos: Prestamo[] = [];
 
-  //listas para cargar los combos de filtros
+  //listas cargadas desde el back para los combos de filtros
   games: Game[] = [];
   clients: Client[] = [];
 
-  //variables de filtros seleccionados por el usuario
+  //variables donde se guardan las selecciones del usuario en los filtros 
   filterGameId: number | null = null;
   filterClientId: number | null = null;
   filterDate: Date | null = null;
@@ -92,8 +92,8 @@ export class PrestamoListComponent implements OnInit {
   }
 
   /*
-  * Convierte el date del mat-datepicker a un string con formato yyyy-MM-dd 
-  * Este formato es el que entiende Spring boot para localdate
+  * Convierte el date del mat-datepicker a formato yyyy-MM-dd, 
+  * Este formato es el que espera Spring boot para localdate
   */
 
   private toIso(date: Date | null): string | null {
@@ -104,7 +104,7 @@ export class PrestamoListComponent implements OnInit {
 
   /*
   * Metodo principal de busqueda
-  * construye un PrestamoSearch y llama al back
+  * construye un PrestamoSearch (filtros, paginacion y ordenacion) y llama al back
   * Tambien recoge y actualiza al paginator
   */
 
@@ -132,13 +132,13 @@ export class PrestamoListComponent implements OnInit {
       });
   }
 
-  //reseta todos los filtros y vuelve a buscar
+  //reseta todos los filtros y reinicia el paginator a la pairmera pagina, luego vuelve a ejecutar la busqueda
   cleanFilters(): void {
     this.filterGameId = null;
     this.filterClientId = null;
     this.filterDate = null;
 
-    //vuelve3 a la primera pagina del paginador
+    //vuelve a la primera pagina del paginador
     this.paginator.firstPage();
 
     this.search();
